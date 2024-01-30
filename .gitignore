@@ -3,3 +3,5 @@ tmp
 .terraform
 terraform.tfstate*
 .auto.tfvars
+hosts
+.inventory
