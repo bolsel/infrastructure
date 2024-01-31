@@ -6,6 +6,7 @@ provider "registry.terraform.io/vmware/vcd" {
   constraints = "3.11.0"
   hashes = [
     "h1:7cbQUrQ3k+Gu67N9MSsR91DIJKj4LtbzkL2X0Iv7H4U=",
+    "h1:fz++5WjF65aD01TfzgEC8Kjg3+p8RjPjh4koU/wj6ic=",
     "zh:1066cc44938ecd24a1cd199a83dbe2f5a739c89ea728451a85c2eb91ed7c393f",
     "zh:13f35b5e64075d470865d2b9a0c887a8d6cd272bc1f13ccf75046c52fd5c2ac4",
     "zh:3f8593c96171801f9ad6199ce8bec3fc47455c17d72353489a68f0e9f6dce70e",
