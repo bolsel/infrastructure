@@ -57,13 +57,18 @@ resource "vcd_vapp_vm" "vm" {
       hostname                   = var.hostname
       local_admin_username       = var.local_admin_username
       automation_username        = var.automation_username
+      local_admin_password       = var.local_admin_password
       local_admin_authorized_key = var.local_admin_authorized_key
       automation_authorized_key  = var.automation_authorized_key
     }))
   }
 }
 
-output "vms" {
+output "data_vm" {
+  value = vcd_vapp_vm.vm
+}
+
+output "data" {
   value = {
     name     = vcd_vapp_vm.vm.name
     hostname = var.hostname

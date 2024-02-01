@@ -42,8 +42,15 @@ module "vms_cloudflared" {
   ]
 }
 
+module "networks_config_file_cloudflared" {
+  source          = "../modules/networks-config-file"
+  for_each        = module.vms_cloudflared
+  networks_config = local.network_config
+  vm = each.value.data_vm
+}
+
 output "vms_cloudflared" {
   value = {
-    for k, bd in module.vms_cloudflared : k => bd
+    for k, bd in module.vms_cloudflared : k => bd.data
   }
 }

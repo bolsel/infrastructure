@@ -19,4 +19,16 @@ data "vcd_network_direct" "bolsel_gov" {
 data "vcd_network_direct" "lan_mgmt" {
   name = var.network_name_lan_mgmt
 }
+
 # ============================
+
+locals {
+  network_config = {
+    "${data.vcd_network_direct.lan_mgmt.name}" = {
+      if_name : "mgmt"
+    }
+    "${data.vcd_network_direct.wan_inet.name}" = {
+      if_name : "inet"
+    }
+  }
+}

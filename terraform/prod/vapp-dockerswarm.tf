@@ -1,6 +1,6 @@
 resource "vcd_vapp" "dockerswarm" {
-  name        = "dockerswarm"
-  description = "Docker Swarm"
+  name        = "DockerSwarm"
+  description = "DockerSwarm cluster"
   power_on    = true
 
 }
@@ -50,8 +50,15 @@ module "vms_dockerswarm" {
   ]
 }
 
+module "networks_config_file_dockerswarm" {
+  source          = "../modules/networks-config-file"
+  for_each        = module.vms_dockerswarm
+  networks_config = local.network_config
+  vm = each.value.data_vm
+}
+
 output "vms_dockerswarm" {
   value = {
-    for k, bd in module.vms_dockerswarm : k => bd
+    for k, bd in module.vms_dockerswarm : k => bd.data
   }
 }
