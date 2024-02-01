@@ -1,0 +1,21 @@
+---
+- name: Netplan
+  hosts: "{{ host }}"
+  become: true
+  tasks:
+    - name: Load var files
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+        name: config
+      with_fileglob:
+        - "{{ playbook_dir }}/../private/netplan-config/{{ inventory_hostname }}/*.yaml"
+    - name: Pass variables to role
+      ansible.builtin.include_role:
+        name: mrlesmithjr.netplan
+      vars:
+        netplan_config_file: "/etc/netplan/10-automation.yaml"
+        netplan_configuration: "{{ config }}"
+        netplan_check_install: false
+        netplan_apply: true
+        netplan_remove_existing: true
+        netplan_backup_existing: true
