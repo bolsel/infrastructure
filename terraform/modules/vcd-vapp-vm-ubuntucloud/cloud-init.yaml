@@ -15,6 +15,7 @@ users:
      groups: [adm, audio, cdrom, dialout, dip, floppy, lxd, netdev, plugdev, sudo, video]
      sudo: "ALL=(ALL) NOPASSWD:ALL"
      shell: /bin/bash
+     hashed_passwd: ${local_admin_password}
      ssh_authorized_keys: 
       - ${local_admin_authorized_key}
 
