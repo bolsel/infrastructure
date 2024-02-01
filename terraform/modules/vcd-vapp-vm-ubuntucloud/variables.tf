@@ -14,13 +14,18 @@ variable "name" {
   type        = string
   description = "Nama VM"
 }
+variable "computer_name" {
+  type    = string
+  default = ""
+}
 variable "description" {
   type        = string
   description = "Deskripsi VM"
   default     = ""
 }
 variable "hostname" {
-  type = string
+  type    = string
+  default = ""
 }
 
 variable "memory" {
@@ -33,6 +38,17 @@ variable "cpus" {
   type        = number
   default     = 1
   description = "vm cpu. default: 1"
+}
+
+variable "firmware" {
+  type        = string
+  default     = "efi"
+  description = "efi or bios"
+}
+
+variable "hardware_version" {
+  type    = string
+  default = "vmx-19"
 }
 
 variable "template_disk_size" {

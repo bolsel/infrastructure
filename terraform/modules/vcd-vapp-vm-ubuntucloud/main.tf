@@ -16,14 +16,21 @@ data "vcd_catalog_vapp_template" "template" {
   name       = var.template_name
 }
 
+locals {
+  hostname      = var.hostname != "" ? var.hostname : var.name
+  computer_name = var.computer_name != "" ? var.computer_name : local.hostname
+}
+
 resource "vcd_vapp_vm" "vm" {
-  name                      = var.hostname
+  name                      = var.name
   description               = var.description
   vapp_name                 = var.vapp_name
   vapp_template_id          = data.vcd_catalog_vapp_template.template.id
-  computer_name             = substr(var.hostname, 0, 14)
+  computer_name             = local.computer_name
   memory                    = var.memory
   cpus                      = var.cpus
+  firmware                  = var.firmware
+  hardware_version          = var.hardware_version
   power_on                  = true
   network_dhcp_wait_seconds = 60
 
@@ -51,10 +58,10 @@ resource "vcd_vapp_vm" "vm" {
   }
 
   guest_properties = {
-    "instance-id" = lower(join("-", [var.vapp_name, var.hostname]))
-    "hostname"    = var.hostname
+    "instance-id" = lower(join("-", [var.vapp_name, local.hostname]))
+    "hostname"    = local.hostname
     "user-data" = base64encode(templatefile("${path.module}/cloud-init.yaml", {
-      hostname                   = var.hostname
+      hostname                   = local.hostname
       local_admin_username       = var.local_admin_username
       automation_username        = var.automation_username
       local_admin_password       = var.local_admin_password
@@ -71,7 +78,7 @@ output "data_vm" {
 output "data" {
   value = {
     name     = vcd_vapp_vm.vm.name
-    hostname = var.hostname
+    hostname = local.hostname
     networks = [
       for index, net in vcd_vapp_vm.vm.network : {
         name   = net.name
