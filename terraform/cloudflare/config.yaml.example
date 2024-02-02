@@ -1,0 +1,6 @@
+"@":
+  service: http://localhost
+www:
+  service: https://localhost
+  origin_request:
+    origin_server_name: ${zone}

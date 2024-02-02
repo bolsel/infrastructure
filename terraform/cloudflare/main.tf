@@ -15,7 +15,7 @@ data "cloudflare_tunnel" "main" {
 }
 
 locals {
-  tunnel_ingress_rules = yamldecode(templatefile("${path.module}/tunnel_ingress.yaml", {
+  tunnel_ingress_rules = yamldecode(templatefile("${path.module}/config.yaml", {
     zone = var.cloudflare_zone
   }))
 }
