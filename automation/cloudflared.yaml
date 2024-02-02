@@ -11,7 +11,7 @@
       tags:
         - start
       ansible.builtin.systemd:
-        name: "cloudflared@{{ cf_tunnel.key }}"
+        name: cloudflared@{{ cf_tunnel.key }}
         state: started
         enabled: true
       loop: "{{ cf_tunnels | dict2items }}"
