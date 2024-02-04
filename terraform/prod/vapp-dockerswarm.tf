@@ -54,7 +54,7 @@ module "networks_config_file_dockerswarm" {
   source          = "../modules/networks-config-file"
   for_each        = module.vms_dockerswarm
   networks_config = local.network_config
-  vm = each.value.data_vm
+  vm              = each.value.data_vm
 }
 
 output "vms_dockerswarm" {
