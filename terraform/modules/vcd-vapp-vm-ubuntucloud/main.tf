@@ -57,6 +57,15 @@ resource "vcd_vapp_vm" "vm" {
     }
   }
 
+  dynamic "disk" {
+    for_each = var.disks
+    content {
+      name        = disk.value.name
+      bus_number  = disk.value.bus_number
+      unit_number = disk.value.unit_number
+    }
+  }
+
   guest_properties = {
     "instance-id" = lower(join("-", [var.vapp_name, local.hostname]))
     "hostname"    = local.hostname

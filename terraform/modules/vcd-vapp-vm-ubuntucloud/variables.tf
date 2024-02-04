@@ -68,6 +68,15 @@ variable "networks" {
   }))
 }
 
+variable "disks" {
+  type = list(object({
+    name        = string
+    bus_number  = number
+    unit_number = number
+  }))
+  default = []
+}
+
 variable "local_admin_username" {
   description = "local admin username."
   type        = string
