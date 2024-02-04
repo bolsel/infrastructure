@@ -1,0 +1,25 @@
+---
+- name: DSwarm Disks
+  hosts: dswarm
+  tasks:
+    - name: Create /mnt/nas directory
+      ansible.builtin.file:
+        path: /mnt/nas
+        state: directory
+        mode: "0755"
+        owner: "root"
+        group: "root"
+    - name: Mount NAS docker-swarm
+      ansible.posix.mount:
+        src: "{{ nas_hostname }}:/mnt/data-pool/docker-swarm"
+        path: /mnt/nas
+        opts: vers=4
+        state: absent
+        fstype: nfs
+    - name: Mount NAS docker-swarm
+      ansible.posix.mount:
+        src: "{{ nas_hostname }}:/mnt/data-pool/docker-swarm"
+        path: /mnt/nas
+        opts: vers=4
+        state: mounted
+        fstype: nfs

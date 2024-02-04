@@ -1,0 +1,24 @@
+---
+- name: DSwarm Master
+  hosts: dswarm-master
+  become: true
+  tasks:
+    - name: Create a new ext4 /dev/sdb
+      community.general.parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+        fs_type: ext4
+    - name: Create /mnt/local directory
+      ansible.builtin.file:
+        path: /mnt/local
+        state: directory
+        mode: "0755"
+        owner: "{{ local_admin_username }}"
+        group: "{{ local_admin_username }}"
+    - name: Mount /dev/sdb1
+      ansible.posix.mount:
+        path: "/mnt/data"
+        src: "/dev/sdb1"
+        fstype: ext4
+        state: present

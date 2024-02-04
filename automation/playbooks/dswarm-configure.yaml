@@ -1,0 +1,33 @@
+---
+- name: DSwarm Configure
+  hosts: docker-hosts
+  block:
+    - name: Check/Init swarm
+      community.docker.docker_swarm:
+        state: present
+        advertise_addr: "{{ dswarm_master_ip }}:2377"
+      register: __output_swarm
+      when: inventory_hostname in "dswarm-master"
+
+    # - name: Install manager
+    #   community.docker.docker_swarm:
+    #     state: join
+    #     timeout: 60
+    #     advertise_addr: "{{ dswarm_master_ip }}:2377"
+    #     join_token: "{{ hostvars['dswarm-master']['__output_swarm']['swarm_facts']['JoinTokens']['Manager'] }}"
+    #     remote_addrs: "dswarm-master"
+    #   when: inventory_hostname in groups['dswarm-managers']
+
+    - name: Install worker
+      community.docker.docker_swarm:
+        state: join
+        timeout: 60
+        advertise_addr: "{{ dswarm_master_ip }}:2377"
+        join_token: "{{ hostvars['dswarm-master']['__output_swarm']['swarm_facts']['JoinTokens']['Worker'] }}"
+        remote_addrs: "dswarm-master"
+      when: inventory_hostname in groups['dswarm-workers']
+
+    - name: Debug
+      ansible.builtin.debug:
+        msg: "{{ hostvars['dswarm-master']['__output_swarm']['swarm_facts'] }}"
+      when: inventory_hostname in 'dswarm-master'

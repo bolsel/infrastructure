@@ -1,0 +1,19 @@
+---
+- name: Docker Install
+  hosts: docker-hosts
+  become: true
+  tasks:
+    - name: Install
+      ansible.builtin.include_role:
+        name: geerlingguy.docker
+    - name: Install Packages
+      ansible.builtin.apt:
+        pkg:
+          - python3-pip
+          - nfs-common
+        state: present
+    - name: Install docker-py
+      ansible.builtin.pip:
+        name:
+          - docker
+        state: present
