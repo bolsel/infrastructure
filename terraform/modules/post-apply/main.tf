@@ -8,9 +8,9 @@ terraform {
 }
 
 locals {
-  saved_vms_dir = "${path.module}/../../../private/saved-vms"
-  inventory_dir = "${path.module}/../../../private/inventory"
-  netplan_dir   = "${path.module}/../../../private/netplan"
+  saved_vms_dir = "${path.module}/../../../.private/saved-vms"
+  inventory_dir = "${path.module}/../../../.private/inventory"
+  netplan_dir   = "${path.module}/../../../.private/netplan"
 }
 
 resource "local_file" "save_vms" {
