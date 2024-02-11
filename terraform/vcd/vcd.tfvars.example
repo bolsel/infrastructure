@@ -1,0 +1,15 @@
+vcd_url                  = "https://vcd1.vcloud.bolsel.gov/api"
+vcd_allow_unverified_ssl = true
+vcd_max_retry_timeout    = 600
+vcd_org                  = "Internal Org"
+vcd_vdc                  = "Datacenter"
+vcd_user                 = "user"
+vcd_pass                 = "pasword"
+
+# vcd_nsxt_edgegateway_name = "ORG_NSX_VDC"
+network_name_wan_inet = "ORG_NET_VDC"
+network_name_lan_mgmt = "lan_mgmt"
+
+local_admin_password       = "$6$rounds=4096..."
+local_admin_authorized_key = "ssh-rsa AAAA..."
+automation_authorized_key  = "ssh-rsa AAAA..."
