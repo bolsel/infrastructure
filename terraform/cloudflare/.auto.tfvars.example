@@ -1,0 +1,8 @@
+
+cloudflare_zone       = "bolselkab.go.id"
+cloudflare_zone_id    = "zone_id_hash"
+cloudflare_account_id = "account_id_hash"
+cloudflare_email      = "account@email.com"
+cloudflare_token      = "token"
+
+cloudflare_tunnel_name = "Prod"
