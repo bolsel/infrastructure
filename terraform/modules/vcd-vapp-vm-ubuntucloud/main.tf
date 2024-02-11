@@ -89,12 +89,9 @@ output "data" {
     name     = vcd_vapp_vm.vm.name
     hostname = local.hostname
     networks = [
-      for index, net in vcd_vapp_vm.vm.network : {
-        name   = net.name
-        ip     = net.ip
-        mac    = net.mac
+      for index, net in vcd_vapp_vm.vm.network : merge({
         macrep = replace(net.mac, ":", "")
-      }
+      }, net)
     ],
   }
 }
