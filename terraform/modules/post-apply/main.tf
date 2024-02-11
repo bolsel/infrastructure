@@ -18,10 +18,10 @@ resource "local_file" "save_vms" {
   filename = "${local.saved_vms_dir}/${var.id}.yaml"
 }
 locals {
-  all_vms_concat = join("\n", [
+  all_vms_concat = fileexists(local.saved_vms_dir) ? join("\n", [
     for fn in fileset(local.saved_vms_dir, "*.yaml") : file("${local.saved_vms_dir}/${fn}")
-  ])
-  all_vms = yamldecode(local.all_vms_concat)
+  ]) : ""
+  all_vms = local.all_vms_concat != "" ? yamldecode(local.all_vms_concat) : {}
 }
 
 resource "local_file" "netplan_config" {
