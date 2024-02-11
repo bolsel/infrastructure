@@ -80,14 +80,19 @@ resource "vcd_vapp_vm" "vm" {
   }
 }
 
+locals {
+  primary_ips = [for net in vcd_vapp_vm.vm.network : "${net.ip}" if net.is_primary == true]
+}
+
 output "data_vm" {
   value = vcd_vapp_vm.vm
 }
 
 output "data" {
   value = {
-    name     = vcd_vapp_vm.vm.name
-    hostname = local.hostname
+    name       = vcd_vapp_vm.vm.name
+    hostname   = local.hostname
+    primary_ip = one(local.primary_ips)
     networks = [
       for index, net in vcd_vapp_vm.vm.network : merge({
         macrep = replace(net.mac, ":", "")
