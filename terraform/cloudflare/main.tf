@@ -4,7 +4,11 @@ terraform {
       source = "cloudflare/cloudflare"
     }
   }
+  backend "local" {
+    path = "../../.private/tf-states/cloudflare.tfstate"
+  }
 }
+
 provider "cloudflare" {
   api_token = var.cloudflare_token
 }
