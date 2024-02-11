@@ -5,7 +5,11 @@ terraform {
       version = "3.11.0"
     }
   }
+  backend "local" {
+    path = "../../../.private/tf-states/vcd-docker-swarm.tfstate"
+  }
 }
+
 provider "vcd" {
   user                 = var.vcd_user
   password             = var.vcd_pass

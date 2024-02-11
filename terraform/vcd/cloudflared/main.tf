@@ -5,7 +5,11 @@ terraform {
       version = "3.11.0"
     }
   }
+  backend "local" {
+    path = "../../../.private/tf-states/vcd-cloudflared.tfstate"
+  }
 }
+
 provider "vcd" {
   user                 = var.vcd_user
   password             = var.vcd_pass
