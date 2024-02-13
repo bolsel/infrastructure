@@ -6,6 +6,8 @@
     private_dir: "{{ pwd }}/.private"
     inventories_dir: "{{ private_dir }}/inventories"
     data_states_dir: "{{ private_dir }}/data-states"
+    private_variables_dir: "{{ private_dir }}/variables"
+    private_init_variables_file: "{{ private_variables_dir }}/init.yml"
   tasks:
     - name: Load vms state files to vcd_vms var
       include_vars:

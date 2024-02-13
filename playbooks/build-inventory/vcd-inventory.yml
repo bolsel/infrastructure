@@ -23,6 +23,12 @@
     mode: "0755"
     recurse: true
 
+- name: Copy init variables
+  file:
+    src: "../../../../variables/init.yml"
+    dest: "{{ inventories_dir }}/vcd-{{ group }}/group_vars/all/init.yml"
+    state: link
+
 - name: Create inventory group_vars default all.yml
   file:
     path: "{{ inventories_dir }}/vcd-{{ group }}/group_vars/all/all.yml"
