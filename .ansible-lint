@@ -1,4 +1,14 @@
-profile: null
+---
+parseable: true
 skip_list:
-  - "name[template]"
-  - "yaml[line-length]"
+  - 'role-name'
+  - 'var-naming'
+  - 'fqcn-builtins'
+  - 'name[template]'
+  - 'no-changed-when'
+  - 'run-once[task]'
+exclude_paths:
+  # Generated files
+  - venv
+  - .venv
+  - kubespray
