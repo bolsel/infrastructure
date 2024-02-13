@@ -39,33 +39,29 @@
             fstype: ext4
             state: mounted
 
-    - name: Worker NAS disk
-      when:
-        - inventory_hostname in groups['worker'] or ('manager' in groups and inventory_hostname in groups['manager'])
-      block:
-        - name: Install nfs packages
-          ansible.builtin.apt:
-            pkg:
-              - nfs-common
-            state: present
-        - name: Create /mnt/dswarm directory
-          ansible.builtin.file:
-            path: /mnt/dswarm
-            state: directory
-            mode: "0755"
-            owner: "root"
-            group: "root"
-        - name: Create fstab NAS dswarm
-          ansible.posix.mount:
-            src: "{{ init_nas_hostname }}:/mnt/data-pool/dswarm"
-            path: /mnt/dswarm
-            opts: vers=4
-            state: present
-            fstype: nfs
-        - name: Mount NAS dswarm
-          ansible.posix.mount:
-            src: "{{ init_nas_hostname }}:/mnt/data-pool/dswarm"
-            path: /mnt/dswarm
-            opts: vers=4
-            state: mounted
-            fstype: nfs
+    - name: Install nfs packages
+      ansible.builtin.apt:
+        pkg:
+          - nfs-common
+        state: present
+    - name: Create /mnt/dswarm directory
+      ansible.builtin.file:
+        path: /mnt/dswarm
+        state: directory
+        mode: "0755"
+        owner: "root"
+        group: "root"
+    - name: Create fstab NAS dswarm
+      ansible.posix.mount:
+        src: "{{ init_nas_hostname }}:/mnt/data-pool/dswarm"
+        path: /mnt/dswarm
+        opts: vers=4
+        state: present
+        fstype: nfs
+    - name: Mount NAS dswarm
+      ansible.posix.mount:
+        src: "{{ init_nas_hostname }}:/mnt/data-pool/dswarm"
+        path: /mnt/dswarm
+        opts: vers=4
+        state: mounted
+        fstype: nfs
