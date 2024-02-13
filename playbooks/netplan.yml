@@ -1,0 +1,19 @@
+---
+- name: Netplan
+  hosts: all
+  become: true
+  tasks:
+    - name: Set config
+      set_fact:
+        config: "{{ lookup('community.general.merge_variables', 'netplan_config_', pattern_type='prefix') }}"
+
+    - name: Run netplan role
+      ansible.builtin.include_role:
+        name: mrlesmithjr.netplan
+      vars:
+        netplan_config_file: /etc/netplan/10-automation.yaml
+        netplan_configuration: "{{ config }}"
+        netplan_check_install: false
+        netplan_apply: true
+        netplan_remove_existing: true
+        netplan_backup_existing: true
