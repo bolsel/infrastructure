@@ -1,0 +1,44 @@
+---
+- name: DSwarm Configure
+  hosts: all
+  vars:
+    advertise_addr: "{{ (groups['master'] | map('extract', hostvars, ['access_ip']))[0] }}"
+    host_access_ip: "{{ hostvars[inventory_hostname]['access_ip'] }}"
+    host_master_first: "{{ groups['master'][0] }}"
+    join_tokens: "{{ hostvars[host_master_first]['__output_swarm']['swarm_facts']['JoinTokens'] }}"
+
+  tasks:
+    - name: Check/Init swarm
+      community.docker.docker_swarm:
+        state: present
+        advertise_addr: "{{ advertise_addr }}:2377"
+        listen_addr: "{{ host_access_ip }}"
+      register: __output_swarm
+      when: inventory_hostname in host_master_first
+
+    - name: Configure manager
+      community.docker.docker_swarm:
+        state: join
+        timeout: 60
+        advertise_addr: "{{ advertise_addr }}:2377"
+        listen_addr: "{{ host_access_ip }}"
+        join_token: "{{ join_tokens['Manager'] }}"
+        remote_addrs: "dswarm-master"
+      when:
+        - "'manager' in groups"
+        - inventory_hostname in groups['manager']
+
+    - name: Configure worker
+      community.docker.docker_swarm:
+        state: join
+        timeout: 60
+        advertise_addr: "{{ advertise_addr }}:2377"
+        listen_addr: "{{ host_access_ip }}"
+        join_token: "{{ join_tokens['Worker'] }}"
+        remote_addrs: "{{ advertise_addr }}"
+      when: inventory_hostname in groups['worker']
+
+    - name: Debug
+      ansible.builtin.debug:
+        msg: "{{ hostvars[host_master_first]['__output_swarm'] }}"
+      when: inventory_hostname in host_master_first

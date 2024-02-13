@@ -1,0 +1,71 @@
+---
+- name: DSwarm Disks
+  hosts: all
+  become: true
+  tasks:
+    - name: Master host disk local /dev/sdb
+      when:
+        - inventory_hostname in groups['master']
+        - "'sdb' in ansible_devices.keys()|list"
+      block:
+        - name: Create partition /dev/sdb
+          community.general.parted:
+            device: /dev/sdb
+            number: 1
+            state: present
+        - name: Crate filesystem /dev/sdb1
+          community.general.filesystem:
+            fstype: ext4
+            dev: /dev/sdb1
+            state: present
+        - name: Create /mnt/local directory
+          ansible.builtin.file:
+            path: /mnt/local
+            state: directory
+            mode: "0755"
+            owner: "root"
+            group: "root"
+        - name: Create fstab mount /dev/sdb1
+          ansible.posix.mount:
+            path: "/mnt/local"
+            src: "/dev/sdb1"
+            fstype: ext4
+            state: present
+            boot: true
+        - name: Mount /dev/sdb1
+          ansible.posix.mount:
+            path: "/mnt/local"
+            src: "/dev/sdb1"
+            fstype: ext4
+            state: mounted
+
+    - name: Worker NAS disk
+      when:
+        - inventory_hostname in groups['worker'] or ('manager' in groups and inventory_hostname in groups['manager'])
+      block:
+        - name: Install nfs packages
+          ansible.builtin.apt:
+            pkg:
+              - nfs-common
+            state: present
+        - name: Create /mnt/dswarm directory
+          ansible.builtin.file:
+            path: /mnt/dswarm
+            state: directory
+            mode: "0755"
+            owner: "root"
+            group: "root"
+        - name: Create fstab NAS dswarm
+          ansible.posix.mount:
+            src: "{{ init_nas_hostname }}:/mnt/data-pool/dswarm"
+            path: /mnt/dswarm
+            opts: vers=4
+            state: present
+            fstype: nfs
+        - name: Mount NAS dswarm
+          ansible.posix.mount:
+            src: "{{ init_nas_hostname }}:/mnt/data-pool/dswarm"
+            path: /mnt/dswarm
+            opts: vers=4
+            state: mounted
+            fstype: nfs
