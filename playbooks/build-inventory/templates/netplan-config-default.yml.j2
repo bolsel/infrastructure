@@ -1,0 +1,18 @@
+# jangan dirubah, generated otomatis
+netplan_config_default:
+  network:
+    version: 2
+    ethernets:
+{% for net in item.networks %}
+      {{ net.interface_name }}:
+{% if net.ip_allocation_mode == "MANUAL" %}
+        addresses:
+          - {{ net.ip }}/{{ net.prefix | default("24")}}
+{% else %}
+        dhcp4: yes
+        dhcp-identifier: mac
+{% endif %}
+        match:
+          macaddress: {{ net.mac }}
+        set-name: {{ net.interface_name }}
+{% endfor %}

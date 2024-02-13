@@ -1,0 +1,34 @@
+---
+- name: Create inventory group_vars dir
+  file:
+    path: "{{ inventories_dir }}/vcd-{{ group }}/group_vars/all"
+    state: directory
+    mode: "0755"
+    recurse: true
+
+- name: Create inventory group_vars default all.yml
+  file:
+    path: "{{ inventories_dir }}/vcd-{{ group }}/group_vars/all/all.yml"
+    state: touch
+    mode: "0655"
+
+- name: Create inventory host_vars dir
+  file:
+    path: "{{ inventories_dir }}/vcd-{{ group }}/host_vars/{{ item.hostname }}"
+    state: directory
+    mode: "0755"
+    recurse: true
+  loop: "{{ vcd_vms[group] }}"
+
+- name: "Create inventory hosts"
+  template:
+    src: "vcd-inventory.ini.j2"
+    dest: "{{ inventories_dir }}/vcd-{{ group }}/hosts"
+    mode: "0655"
+
+- name: "Create netplan-config-default"
+  template:
+    src: "netplan-config-default.yml.j2"
+    dest: "{{ inventories_dir }}/vcd-{{ group }}/host_vars/{{ item.hostname }}/netplan-config-default.yml"
+    mode: "0655"
+  loop: "{{ vcd_vms[group] }}"
