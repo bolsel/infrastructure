@@ -1,4 +1,6 @@
-
+variable "init" {
+  description = "Module init"
+}
 variable "vapp_name" {
   type = string
 }
@@ -105,4 +107,10 @@ variable "automation_authorized_key" {
 variable "power_on" {
   type    = bool
   default = true
+}
+
+variable "netplan_enabled" {
+  type        = bool
+  default     = true
+  description = "enable netplan config"
 }
