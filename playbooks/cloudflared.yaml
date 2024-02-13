@@ -1,0 +1,19 @@
+---
+- name: Cloudflared
+  hosts: all
+  become: true
+  vars_files:
+    - ../.private/variables/ansible/cloudflared.yml
+  roles:
+    - papanito.cloudflared
+  tasks:
+    - name: Start systemd service
+      tags:
+        - start
+      ansible.builtin.systemd:
+        name: cloudflared@{{ cf_tunnel.key }}
+        state: started
+        enabled: true
+      loop: "{{ cf_tunnels | dict2items }}"
+      loop_control:
+        loop_var: cf_tunnel
