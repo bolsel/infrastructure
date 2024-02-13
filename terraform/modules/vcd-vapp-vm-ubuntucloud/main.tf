@@ -89,7 +89,7 @@ output "data_vm" {
 }
 
 output "data" {
-  value = {
+  value = merge({
     name       = vcd_vapp_vm.vm.name
     hostname   = local.hostname
     netplan    = var.netplan_enabled
@@ -100,5 +100,5 @@ output "data" {
         interface_name = net.name
       }, net, lookup(var.init.cloud.vcd_network_config, net.name, {}))
     ],
-  }
+  }, var.variables)
 }

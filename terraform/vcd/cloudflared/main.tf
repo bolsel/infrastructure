@@ -61,13 +61,24 @@ resource "vcd_vapp_org_network" "cloudflared_wanInet" {
 }
 
 module "vms_cloudflared" {
-  for_each = toset(["cloudflared1", "cloudflared2"])
-  source   = "../../modules/vcd-vapp-vm-ubuntucloud"
-  init     = module.init
+  for_each = {
+    cloudflared1 = {
+      variables = {
+        host_groups = ["remote-tunnel"]
+      }
+    }
+    cloudflared2 = {
+      variables = {
+        host_groups = ["remote-tunnel", "local-tunnel"]
+      }
+    }
+  }
+  source = "../../modules/vcd-vapp-vm-ubuntucloud"
+  init   = module.init
 
   vapp_name = vcd_vapp.cloudflared.name
-  name      = each.value
-  hostname  = each.value
+  name      = each.key
+  hostname  = each.key
   cpus      = 2
 
   local_admin_password       = module.init.cloud.local_admin_password
@@ -84,6 +95,8 @@ module "vms_cloudflared" {
       is_primary = true
     }
   ]
+
+  variables = each.value.variables
 }
 
 module "data_state_cloudflared" {

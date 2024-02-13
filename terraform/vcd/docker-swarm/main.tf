@@ -74,9 +74,20 @@ locals {
         bus_number  = 0
         unit_number = 1
       }]
+      variables = {
+        host_groups = ["master"]
+      }
     }
-    "node1" = {}
-    "node2" = {}
+    "node1" = {
+      variables = {
+        host_groups = ["worker"]
+      }
+    }
+    "node2" = {
+      variables = {
+        host_groups = ["worker"]
+      }
+    }
   }
 }
 module "vms_dswarm" {
@@ -108,6 +119,7 @@ module "vms_dswarm" {
       is_primary = false
     }
   ]
+  variables = each.value.variables
 }
 
 module "data_state_dswarm" {

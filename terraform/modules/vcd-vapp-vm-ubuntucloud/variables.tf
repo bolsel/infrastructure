@@ -114,3 +114,7 @@ variable "netplan_enabled" {
   default     = true
   description = "enable netplan config"
 }
+
+variable "variables" {
+  default = {}
+}
