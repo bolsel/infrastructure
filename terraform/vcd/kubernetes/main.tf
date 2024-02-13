@@ -10,21 +10,30 @@ terraform {
   }
 }
 
+//=============================================
+
+module "init" {
+  source   = "../../modules/_initialize"
+  cloud_id = "vcd"
+}
+
+//=============================================
+
 provider "vcd" {
-  user                 = var.vcd_user
-  password             = var.vcd_pass
+  user                 = module.init.cloud.vcd_user
+  password             = module.init.cloud.vcd_pass
   auth_type            = "integrated"
-  org                  = var.vcd_org
-  vdc                  = var.vcd_vdc
-  url                  = var.vcd_url
-  max_retry_timeout    = var.vcd_max_retry_timeout
-  allow_unverified_ssl = var.vcd_allow_unverified_ssl
+  org                  = module.init.cloud.vcd_org
+  vdc                  = module.init.cloud.vcd_vdc
+  url                  = module.init.cloud.vcd_url
+  max_retry_timeout    = module.init.cloud.vcd_max_retry_timeout
+  allow_unverified_ssl = module.init.cloud.vcd_allow_unverified_ssl
 }
 
 //=============================================
 
 data "vcd_network_direct" "wan_inet" {
-  name = var.network_name_wan_inet
+  name = module.init.cloud.network_name_wan_inet
 }
 
 //=============================================
@@ -51,7 +60,9 @@ locals {
 }
 
 module "vms_k8s" {
-  source        = "../../modules/vcd-vapp-vm-ubuntucloud"
+  source = "../../modules/vcd-vapp-vm-ubuntucloud"
+  init   = module.init
+
   for_each      = local.vms
   vapp_name     = vcd_vapp.k8s.name
   name          = each.key
@@ -63,9 +74,9 @@ module "vms_k8s" {
   template_disk_size = 64 * 1024
   disks              = lookup(each.value, "disks", [])
 
-  local_admin_password       = var.local_admin_password
-  local_admin_authorized_key = var.local_admin_authorized_key
-  automation_authorized_key  = var.automation_authorized_key
+  local_admin_password       = module.init.cloud.local_admin_password
+  local_admin_authorized_key = module.init.cloud.local_admin_authorized_key
+  automation_authorized_key  = module.init.cloud.automation_authorized_key
 
   networks = [
     {
@@ -75,19 +86,16 @@ module "vms_k8s" {
   ]
 }
 
-module "post_apply_k8s" {
-  source = "../../modules/post-apply"
-  id     = "dswarm"
-  vms = {
-    for k, bd in module.vms_k8s : k => bd.data
+module "data_state_k8s" {
+  source = "../../modules/save-data-state"
+  init   = module.init
+  key    = "vms"
+  id     = "kubernetes"
+  data = {
+    kubernetes = [
+      for k, bd in module.vms_k8s : merge(bd.data, {
+        groupId = "kubernetes"
+      })
+    ]
   }
-  networks_config = {
-    "${data.vcd_network_direct.wan_inet.name}" = {
-      if_name : "inet"
-    }
-  }
-}
-
-output "name" {
-  value = module.post_apply_k8s.data
 }
