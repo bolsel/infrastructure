@@ -1,7 +1,9 @@
 {
-    "ansible.python.interpreterPath": "/bin/python3",
     "editor.formatOnSave": true,
     "files.associations": {
+      "**/.private/inventories/**/hosts": "ini",
+      "**/playbooks/**/*.yml": "ansible",
+      "**/playbooks/**/*.yaml": "ansible",
       "**/automation/**/*.yml": "ansible",
       "**/automation/**/*.yaml": "ansible"
     }
