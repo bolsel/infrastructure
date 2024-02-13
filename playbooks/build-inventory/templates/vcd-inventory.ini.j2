@@ -2,3 +2,7 @@
 {% for vm in vcd_vms[group] %}
 {{ vm.hostname }} ansible_host={{ vm.primary_ip }} ip={{ vm.primary_ip }} access_ip={{ vm.primary_ip }}
 {% endfor %}
+{% for g in host_groups |dict2items  %}
+[{{ g.key }}]
+{{ g.value | join("\n") }}
+{% endfor %}

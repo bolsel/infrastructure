@@ -1,4 +1,21 @@
 ---
+- name: Set host_groups
+  set_fact:
+    host_groups: |
+      {%- set hostGroups = {} -%}
+      {%- for v in vcd_vms[group] -%}
+        {%- for g in v.host_groups|default([]) -%}
+          {%- if hostGroups[g] is not defined -%}
+            {%- set _ = hostGroups.update({g:[]}) -%}
+          {%- endif -%}
+          {%- set _ = hostGroups[g].append(v.hostname) -%}
+        {%- endfor -%}
+      {%- endfor -%}
+      {{ hostGroups }}
+
+- name: "Debug host_groups {{ group }}"
+  debug:
+    msg: "{{ host_groups }}"
 - name: Create inventory group_vars dir
   file:
     path: "{{ inventories_dir }}/vcd-{{ group }}/group_vars/all"
