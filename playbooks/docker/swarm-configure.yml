@@ -2,7 +2,8 @@
 - name: DSwarm Configure
   hosts: all
   vars:
-    advertise_addr: "{{ (groups['master'] | map('extract', hostvars, ['access_ip']))[0] }}"
+    swarm_leader_ip: "{{ (groups['master'] | map('extract', hostvars, ['access_ip']))[0] }}"
+    # current host ip
     host_access_ip: "{{ hostvars[inventory_hostname]['access_ip'] }}"
     host_master_first: "{{ groups['master'][0] }}"
     join_tokens: "{{ hostvars[host_master_first]['__output_swarm']['swarm_facts']['JoinTokens'] }}"
@@ -11,8 +12,8 @@
     - name: Check/Init swarm
       community.docker.docker_swarm:
         state: present
-        advertise_addr: "{{ advertise_addr }}:2377"
-        listen_addr: "{{ host_access_ip }}"
+        advertise_addr: "{{ host_access_ip }}"
+        default_addr_pool: "{{ init_docker_swarm_default_addr_pool }}"
       register: __output_swarm
       when: inventory_hostname in host_master_first
 
@@ -20,10 +21,9 @@
       community.docker.docker_swarm:
         state: join
         timeout: 60
-        advertise_addr: "{{ advertise_addr }}:2377"
-        listen_addr: "{{ host_access_ip }}"
+        advertise_addr: "{{ host_access_ip }}"
         join_token: "{{ join_tokens['Manager'] }}"
-        remote_addrs: "dswarm-master"
+        remote_addrs: ["{{ swarm_leader_ip }}:2377"]
       when:
         - "'manager' in groups"
         - inventory_hostname in groups['manager']
@@ -32,10 +32,9 @@
       community.docker.docker_swarm:
         state: join
         timeout: 60
-        advertise_addr: "{{ advertise_addr }}:2377"
-        listen_addr: "{{ host_access_ip }}"
+        advertise_addr: "{{ host_access_ip }}"
         join_token: "{{ join_tokens['Worker'] }}"
-        remote_addrs: "{{ advertise_addr }}"
+        remote_addrs: ["{{ swarm_leader_ip }}:2377"]
       when: inventory_hostname in groups['worker']
 
     - name: Debug
