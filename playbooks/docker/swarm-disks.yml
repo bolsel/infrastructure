@@ -44,24 +44,17 @@
         pkg:
           - nfs-common
         state: present
-    - name: Create /mnt/dswarm directory
-      ansible.builtin.file:
-        path: /mnt/dswarm
-        state: directory
-        mode: "0755"
-        owner: "root"
-        group: "root"
-    - name: Create fstab NAS dswarm
+    - name: Create fstab NAS data-pool
       ansible.posix.mount:
-        src: "{{ init_nas_hostname }}:/mnt/data-pool/dswarm"
-        path: /mnt/dswarm
+        src: "{{ init_nas_data_pool_fullpath }}"
+        path: /mnt/data
         opts: vers=4
         state: present
         fstype: nfs
-    - name: Mount NAS dswarm
+    - name: Mount NAS data-pool
       ansible.posix.mount:
-        src: "{{ init_nas_hostname }}:/mnt/data-pool/dswarm"
-        path: /mnt/dswarm
+        src: "{{ init_nas_data_pool_fullpath }}"
+        path: /mnt/data
         opts: vers=4
         state: mounted
         fstype: nfs
