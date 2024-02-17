@@ -52,9 +52,21 @@ resource "vcd_vapp_org_network" "k8s_wanInet" {
 
 locals {
   vms = {
-    "node1" = {}
-    "node2" = {}
-    "node3" = {}
+    "node1" = {
+      variables = {
+        host_groups = ["kube_control_plane", "kube_node", "etcd"]
+      }
+    }
+    "node2" = {
+      variables = {
+        host_groups = ["kube_control_plane", "kube_node", "etcd"]
+      }
+    }
+    "node3" = {
+      variables = {
+        host_groups = ["kube_node", "etcd"]
+      }
+    }
   }
   vms_list = [for key, val in local.vms : merge({ name = key }, val)]
 }
@@ -84,18 +96,20 @@ module "vms_k8s" {
       is_primary = true
     }
   ]
+  variables = each.value.variables
 }
 
-module "data_state_k8s" {
+module "data_state_k8s_vms" {
   source = "../../modules/save-data-state"
   init   = module.init
-  key    = "vms"
   id     = "kubernetes"
   data = {
-    kubernetes = [
-      for k, bd in module.vms_k8s : merge(bd.data, {
-        groupId = "kubernetes"
-      })
-    ]
+    instances = [
+      for k, bd in module.vms_k8s : bd.data
+    ],
+    inventory_sections = {
+      "calico_rr"            = []
+      "k8s_cluster:children" = ["kube_control_plane", "kube_node", "calico_rr"]
+    }
   }
 }

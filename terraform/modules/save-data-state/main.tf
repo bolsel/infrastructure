@@ -13,5 +13,5 @@ locals {
 
 resource "local_file" "save_data" {
   content  = yamlencode(var.data)
-  filename = "${local.data_states_dir}/${var.init.cloud_id}/${var.key}/${var.id}.yaml"
+  filename = "${local.data_states_dir}/${var.init.cloud_id}/${var.id}.yaml"
 }

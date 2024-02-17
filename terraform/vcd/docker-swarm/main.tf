@@ -125,10 +125,9 @@ module "vms_dswarm" {
 module "data_state_dswarm" {
   source = "../../modules/save-data-state"
   init   = module.init
-  key    = "vms"
   id     = "dswarm"
   data = {
-    dswarm = [
+    instances = [
       for k, bd in module.vms_dswarm : merge(bd.data, {
         groupId = "dswarm"
       })

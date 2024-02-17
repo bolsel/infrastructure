@@ -102,10 +102,9 @@ module "vms_cloudflared" {
 module "data_state_cloudflared" {
   source = "../../modules/save-data-state"
   init   = module.init
-  key    = "vms"
   id     = "cloudflared"
   data = {
-    cloudflared = [
+    instances = [
       for k, bd in module.vms_cloudflared : merge(bd.data, {
         groupId = "cloudflared"
       })
