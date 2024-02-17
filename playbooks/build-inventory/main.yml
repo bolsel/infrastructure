@@ -8,16 +8,11 @@
     data_states_dir: "{{ private_dir }}/data-states"
     private_variables_dir: "{{ private_dir }}/variables"
     private_init_variables_file: "{{ private_variables_dir }}/init.yml"
+  vars_files:
+    - "{{ private_dir }}/variables/init.yml"
   tasks:
-    - name: Load vms state files to vcd_vms var
-      include_vars:
-        file: "{{ item }}"
-        name: vcd_vms
-      with_fileglob:
-        - "{{ private_dir }}/data-states/vcd/vms/*.yaml"
-
     - name: Build vcd inventory
       include_tasks: vcd-inventory.yml
-      loop: "{{ vcd_vms | list }}"
+      loop: "{{ query('fileglob', private_dir ~ '/data-states/vcd/*.yaml') }}"
       loop_control:
-        loop_var: group
+        loop_var: vcd_state_file

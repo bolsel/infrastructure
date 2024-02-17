@@ -1,8 +1,17 @@
 [all]
-{% for vm in vcd_vms[group] %}
+{% for vm in state_data.instances %}
 {{ vm.hostname }} ansible_host={{ vm.primary_ip }} ip={{ vm.primary_ip }} access_ip={{ vm.primary_ip }}
 {% endfor %}
+
 {% for g in host_groups |dict2items  %}
 [{{ g.key }}]
 {{ g.value | join("\n") }}
+
+{% endfor %}
+{% for section in state_data.inventory_sections|default({}) | dict2items %}
+[{{ section.key }}]
+{% for sv in section.value|default([]) %}
+{{ sv }}
+{% endfor %}
+
 {% endfor %}

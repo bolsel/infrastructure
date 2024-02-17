@@ -1,9 +1,18 @@
 ---
+- name: Load state data to variables
+  include_vars:
+    file: "{{ vcd_state_file }}"
+    name: state_data
+
+- name: Set id
+  set_fact:
+    state_id: "{{ vcd_state_file | splitext | first | basename  }}"
+
 - name: Set host_groups
   set_fact:
     host_groups: |
       {%- set hostGroups = {} -%}
-      {%- for v in vcd_vms[group] -%}
+      {%- for v in state_data.instances -%}
         {%- for g in v.host_groups|default([]) -%}
           {%- if hostGroups[g] is not defined -%}
             {%- set _ = hostGroups.update({g:[]}) -%}
@@ -13,12 +22,9 @@
       {%- endfor -%}
       {{ hostGroups }}
 
-- name: "Debug host_groups {{ group }}"
-  debug:
-    msg: "{{ host_groups }}"
 - name: Create inventory group_vars dir
   file:
-    path: "{{ inventories_dir }}/vcd-{{ group }}/group_vars/all"
+    path: "{{ inventories_dir }}/vcd-{{ state_id }}/group_vars/all"
     state: directory
     mode: "0755"
     recurse: true
@@ -26,32 +32,32 @@
 - name: Copy init variables
   file:
     src: "../../../../variables/init.yml"
-    dest: "{{ inventories_dir }}/vcd-{{ group }}/group_vars/all/init.yml"
+    dest: "{{ inventories_dir }}/vcd-{{ state_id }}/group_vars/all/init.yml"
     state: link
 
 - name: Create inventory group_vars default all.yml
   file:
-    path: "{{ inventories_dir }}/vcd-{{ group }}/group_vars/all/all.yml"
+    path: "{{ inventories_dir }}/vcd-{{ state_id }}/group_vars/all/all.yml"
     state: touch
     mode: "0655"
 
 - name: Create inventory host_vars dir
   file:
-    path: "{{ inventories_dir }}/vcd-{{ group }}/host_vars/{{ item.hostname }}"
+    path: "{{ inventories_dir }}/vcd-{{ state_id }}/host_vars/{{ item.hostname }}"
     state: directory
     mode: "0755"
     recurse: true
-  loop: "{{ vcd_vms[group] }}"
+  loop: "{{ state_data.instances | default([]) }}"
 
 - name: "Create inventory hosts"
   template:
     src: "vcd-inventory.ini.j2"
-    dest: "{{ inventories_dir }}/vcd-{{ group }}/hosts"
+    dest: "{{ inventories_dir }}/vcd-{{ state_id }}/hosts"
     mode: "0655"
 
 - name: "Create netplan-config-default"
   template:
     src: "netplan-config-default.yml.j2"
-    dest: "{{ inventories_dir }}/vcd-{{ group }}/host_vars/{{ item.hostname }}/netplan-config-default.yml"
+    dest: "{{ inventories_dir }}/vcd-{{ state_id }}/host_vars/{{ item.hostname }}/netplan-config-default.yml"
     mode: "0655"
-  loop: "{{ vcd_vms[group] }}"
+  loop: "{{ state_data.instances | default([]) }}"
