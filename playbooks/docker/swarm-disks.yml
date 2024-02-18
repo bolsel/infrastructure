@@ -5,7 +5,7 @@
   tasks:
     - name: Master host disk local /dev/sdb
       when:
-        - inventory_hostname in groups['master']
+        - inventory_hostname in groups['masters']
         - "'sdb' in ansible_devices.keys()|list"
       block:
         - name: Create partition /dev/sdb

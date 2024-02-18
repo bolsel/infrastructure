@@ -2,10 +2,10 @@
 - name: DSwarm Configure
   hosts: all
   vars:
-    swarm_leader_ip: "{{ (groups['master'] | map('extract', hostvars, ['access_ip']))[0] }}"
+    swarm_leader_ip: "{{ (groups['masters'] | map('extract', hostvars, ['access_ip']))[0] }}"
     # current host ip
     host_access_ip: "{{ hostvars[inventory_hostname]['access_ip'] }}"
-    host_master_first: "{{ groups['master'][0] }}"
+    host_master_first: "{{ groups['masters'][0] }}"
     join_tokens: "{{ hostvars[host_master_first]['__output_swarm']['swarm_facts']['JoinTokens'] }}"
 
   tasks:
@@ -25,8 +25,8 @@
         join_token: "{{ join_tokens['Manager'] }}"
         remote_addrs: ["{{ swarm_leader_ip }}:2377"]
       when:
-        - "'manager' in groups"
-        - inventory_hostname in groups['manager']
+        - "'managers' in groups"
+        - inventory_hostname in groups['managers']
 
     - name: Configure worker
       community.docker.docker_swarm:
@@ -35,7 +35,7 @@
         advertise_addr: "{{ host_access_ip }}"
         join_token: "{{ join_tokens['Worker'] }}"
         remote_addrs: ["{{ swarm_leader_ip }}:2377"]
-      when: inventory_hostname in groups['worker']
+      when: inventory_hostname in groups['workers']
 
     - name: Debug
       ansible.builtin.debug:

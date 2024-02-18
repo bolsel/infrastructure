@@ -75,17 +75,17 @@ locals {
         unit_number = 1
       }]
       variables = {
-        host_groups = ["master"]
+        host_groups = ["masters"]
       }
     }
     "node1" = {
       variables = {
-        host_groups = ["worker"]
+        host_groups = ["managers"]
       }
     }
     "node2" = {
       variables = {
-        host_groups = ["worker"]
+        host_groups = ["workers"]
       }
     }
   }
