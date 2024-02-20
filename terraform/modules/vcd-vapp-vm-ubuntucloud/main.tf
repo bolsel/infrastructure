@@ -96,7 +96,7 @@ output "data" {
     primary_ip = one(local.primary_ips)
     networks = [
       for index, net in vcd_vapp_vm.vm.network : merge({
-        macrep         = replace(net.mac, ":", "")
+        macrep         = replace(net.mac == null ? "" : net.mac, ":", "")
         interface_name = net.name
       }, net, lookup(var.init.cloud.vcd_network_config, net.name, {}))
     ],

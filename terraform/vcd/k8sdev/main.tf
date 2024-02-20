@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "local" {
-    path = "../../../.private/tf-states/vcd-kubernetes.tfstate"
+    path = "../../../.private/tf-states/vcd-k8sdev.tfstate"
   }
 }
 
@@ -41,20 +41,20 @@ data "vcd_network_direct" "lan_mgmt" {
 
 //=============================================
 
-resource "vcd_vapp" "k8s" {
-  name        = "Kubernetes"
-  description = "Kubernetes Cluster vApp"
+resource "vcd_vapp" "k8sdev" {
+  name        = "KubernetesDev"
+  description = "Kubernetes Dev Cluster vApp"
   power_on    = true
 }
 
-resource "vcd_vapp_org_network" "k8s_wanInet" {
-  vapp_name              = vcd_vapp.k8s.name
+resource "vcd_vapp_org_network" "k8sdev_wanInet" {
+  vapp_name              = vcd_vapp.k8sdev.name
   org_network_name       = data.vcd_network_direct.wan_inet.name
   reboot_vapp_on_removal = true
 }
 
-resource "vcd_vapp_org_network" "k8s_lanMgmt" {
-  vapp_name              = vcd_vapp.k8s.name
+resource "vcd_vapp_org_network" "k8sdev_lanMgmt" {
+  vapp_name              = vcd_vapp.k8sdev.name
   org_network_name       = data.vcd_network_direct.lan_mgmt.name
   reboot_vapp_on_removal = true
 }
@@ -80,17 +80,17 @@ locals {
   vms_list = [for key, val in local.vms : merge({ name = key }, val)]
 }
 
-module "vms_k8s" {
+module "vms_k8sdev" {
   source = "../../modules/vcd-vapp-vm-ubuntucloud"
   init   = module.init
 
   for_each      = local.vms
-  vapp_name     = vcd_vapp.k8s.name
+  vapp_name     = vcd_vapp.k8sdev.name
   name          = each.key
   hostname      = each.key
   computer_name = each.key
-  cpus          = can(each.value.cpus) ? each.value.cpus : 8
-  memory        = (can(each.value.memory) ? each.value.memory : 16) * 1024
+  cpus          = can(each.value.cpus) ? each.value.cpus : 4
+  memory        = (can(each.value.memory) ? each.value.memory : 8) * 1024
 
   template_disk_size = 64 * 1024
   disks              = lookup(each.value, "disks", [])
@@ -101,28 +101,28 @@ module "vms_k8s" {
 
   networks = [
     {
-      name       = vcd_vapp_org_network.k8s_wanInet.org_network_name
+      name       = vcd_vapp_org_network.k8sdev_wanInet.org_network_name
       is_primary = true
     },
     {
-      name       = vcd_vapp_org_network.k8s_lanMgmt.org_network_name
+      name       = vcd_vapp_org_network.k8sdev_lanMgmt.org_network_name
       is_primary = false
     }
   ]
   variables = each.value.variables
 }
 
-module "data_state_k8s_vms" {
+module "data_state_k8sdev_vms" {
   source = "../../modules/save-data-state"
   init   = module.init
-  id     = "kubernetes"
+  id     = "k8sdev"
   data = {
     instances = [
-      for k, bd in module.vms_k8s : bd.data
+      for k, bd in module.vms_k8sdev : bd.data
     ],
     inventory_sections = {
-      "calico_rr"            = []
-      "k8s_cluster:children" = ["kube_control_plane", "kube_node", "calico_rr"]
+      "calico_rr"               = []
+      "k8sdev_cluster:children" = ["kube_control_plane", "kube_node", "calico_rr"]
     }
   }
 }
