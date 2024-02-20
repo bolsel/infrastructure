@@ -121,8 +121,8 @@ module "data_state_k8sdev_vms" {
       for k, bd in module.vms_k8sdev : bd.data
     ],
     inventory_sections = {
-      "calico_rr"               = []
-      "k8sdev_cluster:children" = ["kube_control_plane", "kube_node", "calico_rr"]
+      "calico_rr"            = []
+      "k8s_cluster:children" = ["kube_control_plane", "kube_node", "calico_rr"]
     }
   }
 }
