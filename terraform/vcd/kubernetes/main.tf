@@ -61,6 +61,11 @@ resource "vcd_vapp_org_network" "k8s_lanMgmt" {
 
 locals {
   vms = {
+    "master" = {
+      variables = {
+        host_groups = ["kube_control_plane", "kube_node", "etcd"]
+      }
+    }
     "node1" = {
       variables = {
         host_groups = ["kube_control_plane", "kube_node", "etcd"]
