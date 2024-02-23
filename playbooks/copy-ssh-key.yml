@@ -1,0 +1,12 @@
+---
+- name: Copy shh key
+  hosts: "{{ host }}"
+  become: true
+  tasks:
+    - name: Copy file
+      copy:
+        src: "../.private/ssh-keys/{{ init_local_admin_username }}"
+        dest: "/home/{{ init_local_admin_username }}/.ssh/id_rsa"
+        owner: "{{ init_local_admin_username }}"
+        group: "{{ init_local_admin_username }}"
+        mode: "0600"
