@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "local" {
-    path = "../../../.private/tf-states/vcd-docker-swarm.tfstate"
+    path = "../../../.private/tf-states/vcd-dswarm.tfstate"
   }
 }
 
@@ -42,7 +42,7 @@ data "vcd_network_direct" "lan_mgmt" {
 //=============================================
 
 resource "vcd_vapp" "dswarm" {
-  name        = "Docker Swarm"
+  name        = "DockerSwarm"
   description = "Docker Swarm Cluster"
   power_on    = true
 }
@@ -60,7 +60,7 @@ resource "vcd_vapp_org_network" "dswarm_wanInet" {
 }
 
 resource "vcd_independent_disk" "dswarm_master" {
-  name         = "dswarm-master"
+  name         = "dockerswarm-master"
   size_in_mb   = 32 * 1024
   bus_type     = "SCSI"
   bus_sub_type = "VirtualSCSI"
@@ -74,9 +74,7 @@ locals {
         bus_number  = 0
         unit_number = 1
       }]
-      variables = {
-        host_groups = ["masters"]
-      }
+      variables = {}
     }
     "node1" = {
       variables = {
@@ -84,6 +82,11 @@ locals {
       }
     }
     "node2" = {
+      variables = {
+        host_groups = ["workers"]
+      }
+    }
+    "node3" = {
       variables = {
         host_groups = ["workers"]
       }
@@ -128,9 +131,7 @@ module "data_state_dswarm" {
   id     = "dswarm"
   data = {
     instances = [
-      for k, bd in module.vms_dswarm : merge(bd.data, {
-        groupId = "dswarm"
-      })
+      for k, bd in module.vms_dswarm : bd.data
     ]
   }
 }
