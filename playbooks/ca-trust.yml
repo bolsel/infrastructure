@@ -1,0 +1,25 @@
+---
+- name: CA Trust
+  hosts: all
+  become: true
+  vars:
+    pwd: "{{ lookup('env', 'PWD') }}"
+    private_dir: "{{ pwd }}/.private"
+  tasks:
+    - name: Make sure the folder exists
+      file:
+        path: /usr/local/share/ca-certificates
+        state: directory
+        mode: "0755"
+    - name: Copy the certificates
+      copy:
+        src: "{{ item }}"
+        dest: "/usr/local/share/ca-certificates/{{ item | basename }}.crt"
+        directory_mode: true
+        mode: "0644"
+      loop: "{{ query('fileglob', private_dir ~ '/certificates/root-certs/*.pem') }}"
+      notify: Update CA Trust
+
+  handlers:
+    - name: Update CA Trust
+      command: update-ca-certificates
