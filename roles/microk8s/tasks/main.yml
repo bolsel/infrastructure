@@ -1,0 +1,24 @@
+---
+- name: Set master_host_inventory
+  set_fact:
+    master_host_inventory: "{{ (groups['mk8s_master'] | sort)[0] }}"
+
+- name: Set master_host_ip
+  set_fact:
+    master_host_ip: "{{ hostvars[master_host_inventory]['access_ip'] }}"
+
+- name: Install Cluster
+  include_tasks:
+    file: install.yml
+    apply:
+      tags:
+        - install
+  tags:
+    - install
+  when: inventory_hostname in groups['mk8s_' ~ microk8s_host_type]
+  with_items:
+    - master
+    - control_plane
+    - worker
+  loop_control:
+    loop_var: microk8s_host_type

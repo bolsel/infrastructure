@@ -1,0 +1,31 @@
+---
+version: 0.2.0
+{% if microk8s_host_type == 'master' %}
+persistentClusterToken: {{ microk8s_persistent_cluster_token }}
+{% endif %}
+addons:
+  - name: dns
+    args: [/etc/resolv.conf, {{ microk8s_dns_ip }}]
+extraCNIEnv:
+  IPv4_SUPPORT: true
+  IPv4_CLUSTER_CIDR: "{{ microk8s_cluster_cidr }}"
+  IPv4_SERVICE_CIDR: "{{ microk8s_service_cidr }}"
+extraSANs:
+  - {{ microk8s_cluster_svc_ip }}
+  - {{ microk8s_cluster_domain }}
+extraKubeletArgs:
+  --cluster-domain: {{ microk8s_cluster_domain }}
+containerdRegistryConfigs:
+  docker.io: |
+    [host."https://docker.registry.bolsel.gov"]
+    capabilities = ["pull", "resolve"]
+  registry.k8s.io: |
+    [host."https://k8s.registry.bolsel.gov"]
+    capabilities = ["pull", "resolve"]
+{% if microk8s_host_type == 'control_plane' or microk8s_host_type == 'worker' %}
+join:
+  url: {{ master_host_ip }}:25000/{{ microk8s_persistent_cluster_token }}
+{% if microk8s_host_type == 'worker' %}
+  worker: true
+{% endif %}
+{% endif %}

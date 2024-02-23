@@ -1,0 +1,5 @@
+---
+- name: Restart microk8s
+  shell: |
+    microk8s.stop
+    microk8s.start
