@@ -13,6 +13,8 @@ extraCNIEnv:
 extraSANs:
   - {{ microk8s_cluster_svc_ip }}
   - {{ microk8s_cluster_domain }}
+extraKubeAPIServerArgs:
+  --advertise-address: {{ host_networks[microk8s_advertise_interface].ip }}
 extraKubeletArgs:
   --cluster-domain: {{ microk8s_cluster_domain }}
 containerdRegistryConfigs:
@@ -21,6 +23,15 @@ containerdRegistryConfigs:
     capabilities = ["pull", "resolve"]
   registry.k8s.io: |
     [host."https://k8s.registry.bolsel.gov"]
+    capabilities = ["pull", "resolve"]
+  quay.io: |
+    [host."https://quay.registry.bolsel.gov"]
+    capabilities = ["pull", "resolve"]
+  ghcr.io: |
+    [host."https://ghcr.registry.bolsel.gov"]
+    capabilities = ["pull", "resolve"]
+  k8s.gcr.io: |
+    [host."https://k8s-gcr.registry.bolsel.gov"]
     capabilities = ["pull", "resolve"]
 {% if microk8s_host_type == 'control_plane' or microk8s_host_type == 'worker' %}
 join:

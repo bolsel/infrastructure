@@ -5,7 +5,7 @@
 
 - name: Set master_host_ip
   set_fact:
-    master_host_ip: "{{ hostvars[master_host_inventory]['access_ip'] }}"
+    master_host_ip: "{{ hostvars[master_host_inventory].host_networks[microk8s_advertise_interface].ip }}"
 
 - name: Install Cluster
   include_tasks:

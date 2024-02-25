@@ -16,8 +16,11 @@
 - name: Install from local
   include_tasks:
     file: install-local.yml
+  vars:
+    snap_package_dirname: "{{ microk8s_local_path | default(microk8s_version) }}"
+    local_snap_packages_dir_base: "{{ playbook_dir ~ '/../local/snap_packages/microk8s' }}"
+    local_snap_packages_dir: "{{ local_snap_packages_dir_base ~ '/' ~ snap_package_dirname }}"
   when: microk8s_download_local
-
 - name: Install microk8s
   community.general.snap:
     name: microk8s
@@ -66,5 +69,5 @@
       command: microk8s.status --wait-ready
 
 - name: Disable snap autoupdate
-  command: "sudo snap set system refresh.hold=2050-01-01T15:04:05Z"
+  command: "sudo snap refresh --hold microk8s"
   when: microk8s_disable_snap_autoupdate

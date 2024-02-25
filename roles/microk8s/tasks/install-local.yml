@@ -2,17 +2,18 @@
 - name: Check package file local
   delegate_to: localhost
   run_once: true
-  vars:
-    local_dir_package: "{{ playbook_dir ~ '/../local/microk8s/snap_packages/' ~ microk8s_version }}"
+  when:
+    - microk8s_local_path is not defined
   block:
     - name: Local directory
       file:
         state: directory
         mode: "0777"
-        dest: "{{ local_dir_package }}"
+        dest: "{{ local_snap_packages_dir }}"
+        recurse: true
     - name: Stat package
       stat:
-        dest: "{{ local_dir_package ~ '/microk8s.snap' }}"
+        dest: "{{ local_snap_packages_dir ~ '/microk8s.snap' }}"
       register: stat_package
 
     - name: Is Downloading
@@ -22,7 +23,7 @@
 
     - name: Download package
       shell:
-        chdir: "{{ local_dir_package }}"
+        chdir: "{{ local_snap_packages_dir }}"
         cmd: |
           snap download microk8s --channel {{ microk8s_version }}
           mv microk8s_*.snap microk8s.snap
@@ -31,15 +32,13 @@
       when: not stat_package.stat.exists
 
 - name: Copy packages
-  vars:
-    local_dir_package: "{{ playbook_dir ~ '/../local/microk8s/snap_packages/' ~ microk8s_version }}"
   copy:
-    src: "{{ local_dir_package }}/"
-    dest: "/tmp/snap_packages/{{ microk8s_version }}"
+    src: "{{ local_snap_packages_dir }}/"
+    dest: "/tmp/snap_packages/{{ snap_package_dirname }}"
     mode: "0755"
 
 - name: Get assert files on remote machine
-  shell: "ls /tmp/snap_packages/{{ microk8s_version }}/*.assert"
+  shell: "ls /tmp/snap_packages/{{ snap_package_dirname }}/*.assert"
   register: assert_files
 
 - name: Snap ack
@@ -47,7 +46,7 @@
   with_items: "{{ assert_files.stdout_lines }}"
 
 - name: Get snap files on remote machine
-  shell: "ls /tmp/snap_packages/{{ microk8s_version }}/*.snap"
+  shell: "ls /tmp/snap_packages/{{ snap_package_dirname }}/*.snap"
   register: snap_files
 
 - name: Install snap packages
