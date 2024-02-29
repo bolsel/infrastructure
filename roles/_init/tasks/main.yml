@@ -1,0 +1,4 @@
+---
+- name: Load init variables
+  include_vars: "../../../.private/variables/init.yml"
+  when: variables | bool
