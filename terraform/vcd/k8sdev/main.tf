@@ -59,29 +59,46 @@ resource "vcd_vapp_org_network" "k8sdev_lanMgmt" {
   reboot_vapp_on_removal = true
 }
 
+resource "vcd_vapp_network" "k8sdev_advertise" {
+  vapp_name     = vcd_vapp.k8sdev.name
+  name          = "advertise2"
+  gateway       = "192.168.10.1"
+  prefix_length = "27"
+  static_ip_pool {
+    start_address = "192.168.10.2"
+    end_address   = "192.168.10.29"
+  }
+  reboot_vapp_on_removal = true
+}
+
 locals {
   vms = {
     "master" = {
+      advertise_end_ip = 1
       variables = {
         host_groups = ["mk8s_master", "kube_control_plane", "kube_node", "etcd"]
       }
     }
     "node-01" = {
+      advertise_end_ip = 2
       variables = {
         host_groups = ["mk8s_control_plane", "kube_control_plane", "kube_node", "etcd"]
       }
     }
     "node-02" = {
+      advertise_end_ip = 3
       variables = {
         host_groups = ["mk8s_control_plane", "kube_control_plane", "kube_node", "etcd"]
       }
     }
     "node-03" = {
+      advertise_end_ip = 4
       variables = {
         host_groups = ["mk8s_worker", "kube_node", "etcd"]
       }
     }
     "node-04" = {
+      advertise_end_ip = 5
       variables = {
         host_groups = ["mk8s_worker", "kube_node", "etcd"]
       }
@@ -117,6 +134,13 @@ module "vms_k8sdev" {
     {
       name       = vcd_vapp_org_network.k8sdev_lanMgmt.org_network_name
       is_primary = false
+    },
+    {
+      type               = "vapp"
+      name               = vcd_vapp_network.k8sdev_advertise.name
+      is_primary         = false
+      ip_allocation_mode = "MANUAL"
+      ip                 = "192.168.10.1${each.value.advertise_end_ip}"
     }
   ]
   variables = each.value.variables
