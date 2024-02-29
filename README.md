@@ -42,11 +42,11 @@ make build-inventory f=statefilename
 
 ## Plays
 
-ganti *inventory_dirname* dengan nama folder di [inventory](./inventory).
+ganti *inventory_dirname* dengan nama folder di [.private/inventories/ atau inventory/](./.private/inventories).
 
 ### playbooks 
 
-jalankan ansible playbook pada file-file di folder [playbooks](./playbooks).
+jalankan ansible playbook pada file-file di folder [playbooks/](./playbooks).
 
  ganti *namafile.yml* dengan nama file playbooks.
 
@@ -65,9 +65,9 @@ make play inventory=vcd-cloudflared r="cloudflared.yml"
 
 ### plays role
 
-jalankan task-task pada [plays role](./roles/plays/)
+jalankan task-task pada [roles/plays/](./roles/plays/)
 
-ganti *namatask* dengan file task pada [plays role tasks](./roles/plays/tasks/) (tanpa extensi).
+ganti *namatask* dengan file task pada [roles/plays/tasks/](./roles/plays/tasks/) (tanpa extensi).
 
 ```shell
 make play inventory=inventory_dirname t="namatask"
