@@ -1,0 +1,15 @@
+---
+- name: Set config
+  set_fact:
+    config: "{{ lookup('community.general.merge_variables', 'host_netplan_config_', pattern_type='prefix') }}"
+
+- name: Run netplan role
+  include_role:
+    name: mrlesmithjr.netplan
+  vars:
+    netplan_config_file: /etc/netplan/10-automation.yaml
+    netplan_configuration: "{{ config }}"
+    netplan_check_install: false
+    netplan_apply: true
+    netplan_remove_existing: true
+    netplan_backup_existing: true

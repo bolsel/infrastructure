@@ -1,0 +1,11 @@
+---
+- name: Stop
+  become: true
+  command: "microk8s stop"
+
+- name: Uninstall microk8s
+  become: true
+  community.general.snap:
+    state: absent
+    name: microk8s
+    dangerous: true

@@ -1,0 +1,24 @@
+---
+- name: Docker Swarm
+  hosts: all
+  become: true
+  tasks:
+    - name: Master host disk local /dev/sdb
+      include_role:
+        name: mounts
+      vars:
+        locals:
+          - device: /dev/sdb
+            src: /dev/sdb1
+            path: /mnt/local
+      when:
+        - inventory_hostname in "master"
+        - "'sdb' in ansible_devices.keys()|list"
+
+    - name: Nfs NAS /mnt/data
+      include_role:
+        name: mounts
+      vars:
+        nfs_nas:
+          - src: "{{ init_nas_data_pool_fullpath }}"
+            path: /mnt/data

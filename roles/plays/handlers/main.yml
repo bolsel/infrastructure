@@ -4,3 +4,6 @@
   systemd_service:
     name: docker
     state: reloaded
+
+- name: Update CA
+  command: update-ca-certificates

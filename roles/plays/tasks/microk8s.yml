@@ -1,0 +1,4 @@
+---
+- name: Microk8s
+  include_role:
+    - microk8s

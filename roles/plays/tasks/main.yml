@@ -1,3 +1,7 @@
 ---
+- name: Set facts
+  set_fact:
+    private_dir: ".private"
+
 - name: Run task
   include_tasks: "{{ task }}.yml"
