@@ -1,10 +1,12 @@
 {
-    "editor.formatOnSave": true,
-    "files.associations": {
-      "**/.private/inventories/**/hosts": "ini",
-      "**/playbooks/**/*.yml": "ansible",
-      "**/playbooks/**/*.yaml": "ansible",
-      "**/automation/**/*.yml": "ansible",
-      "**/automation/**/*.yaml": "ansible"
-    }
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "**/.private/inventories/**/hosts": "ini",
+    "**/playbooks/**/*.yml": "ansible",
+    "**/playbooks/**/*.yaml": "ansible",
+    "**/roles/**/*.yml": "ansible",
+    "**/automation/**/*.yml": "ansible",
+    "**/automation/**/*.yaml": "ansible"
+  },
+  "ansible.python.interpreterPath": "/bin/python3"
 }
