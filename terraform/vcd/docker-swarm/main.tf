@@ -69,6 +69,8 @@ resource "vcd_independent_disk" "dswarm_master" {
 locals {
   vms = {
     "master" = {
+      memory = 16
+      cpus   = 8
       disks = [{
         name        = vcd_independent_disk.dswarm_master.name
         bus_number  = 0
