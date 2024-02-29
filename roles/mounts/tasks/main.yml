@@ -1,0 +1,15 @@
+- name: Locals disks
+  include_tasks: local-disk.yml
+  with_items: "{{ locals | default([]) }}"
+
+- name: Install nfs packages
+  ansible.builtin.apt:
+    pkg:
+      - nfs-common
+    state: present
+  when: nfs_nas is defined
+
+- name: Nfs NAS
+  include_tasks: nfs-nas.yml
+  when: nfs_nas is defined
+  with_items: "{{ nfs_nas | default([]) }}"

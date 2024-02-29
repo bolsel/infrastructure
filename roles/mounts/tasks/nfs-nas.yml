@@ -1,0 +1,15 @@
+---
+- name: "Create fstab nfs {{ item.path }}"
+  ansible.posix.mount:
+    src: "{{ item.src }}"
+    path: "{{ item.path }}"
+    opts: vers=4
+    state: present
+    fstype: nfs
+- name: "Mount nfs {{ item.path }}"
+  ansible.posix.mount:
+    src: "{{ item.src }}"
+    path: "{{ item.path }}"
+    opts: vers=4
+    state: mounted
+    fstype: nfs

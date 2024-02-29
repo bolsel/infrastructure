@@ -1,0 +1,31 @@
+---
+- name: "Create partition {{ item.device }}"
+  community.general.parted:
+    device: "{{ item.device }}"
+    number: 1
+    state: present
+- name: "Crate filesystem {{ item.src }}"
+  community.general.filesystem:
+    fstype: ext4
+    dev: "{{ item.src }}"
+    state: present
+- name: "Create {{ item.path }} directory"
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "0755"
+    owner: "root"
+    group: "root"
+- name: "Create fstab mount {{ item.src }}"
+  ansible.posix.mount:
+    path: "{{ item.path }}"
+    src: "{{ item.src }}"
+    fstype: ext4
+    state: present
+    boot: true
+- name: "Mount {{ item.src }}"
+  ansible.posix.mount:
+    path: "{{ item.path }}"
+    src: "{{ item.src }}"
+    fstype: ext4
+    state: mounted
