@@ -5,4 +5,3 @@ terraform.tfstate*
 .auto.tfvars
 hosts
 .inventory
-terraform/vcd/vcd.tfvars
