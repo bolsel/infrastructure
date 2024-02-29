@@ -55,9 +55,9 @@
     dest: "{{ inventories_dir }}/vcd-{{ state_id }}/hosts"
     mode: "0655"
 
-- name: "Create netplan-config-default"
+- name: "Create generated host vars"
   template:
-    src: "netplan-config-default.yml.j2"
-    dest: "{{ inventories_dir }}/vcd-{{ state_id }}/host_vars/{{ item.hostname }}/netplan-config-default.yml"
+    src: "generated-host-vars.yml.j2"
+    dest: "{{ inventories_dir }}/vcd-{{ state_id }}/host_vars/{{ item.hostname }}/generated.yml"
     mode: "0655"
   loop: "{{ state_data.instances | default([]) }}"

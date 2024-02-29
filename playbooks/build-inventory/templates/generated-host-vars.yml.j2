@@ -1,5 +1,16 @@
 # jangan dirubah, generated otomatis
-netplan_config_default:
+
+{% for net in item.networks %}
+host_ip_{{ net.interface_name }}: {{ net.ip }}
+{% endfor %}
+host_networks:
+{% for net in item.networks %}
+  {{ net.interface_name }}:
+    ip: {{ net.ip }}
+    mac: {{ net.mac }}
+{% endfor %}
+
+host_netplan_config_default:
   network:
     version: 2
     ethernets:

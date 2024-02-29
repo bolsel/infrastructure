@@ -13,6 +13,6 @@
   tasks:
     - name: Build vcd inventory
       include_tasks: vcd-inventory.yml
-      loop: "{{ query('fileglob', private_dir ~ '/data-states/vcd/*.yaml') }}"
+      loop: "{{ query('fileglob', private_dir ~ '/data-states/vcd/' ~  single | default('*') ~'.yaml') }}"
       loop_control:
         loop_var: vcd_state_file
