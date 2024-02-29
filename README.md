@@ -42,7 +42,7 @@ make build-inventory f=statefilename
 
 ## Plays
 
-ganti *inventory_dirname* dengan nama folder di [.private/inventories/ atau inventory/](./.private/inventories).
+ganti *inventory_dirname* dengan nama folder di *.private/inventories/* atau *inventory/*
 
 ### playbooks 
 
