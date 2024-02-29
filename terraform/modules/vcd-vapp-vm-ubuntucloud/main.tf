@@ -22,17 +22,18 @@ locals {
 }
 
 resource "vcd_vapp_vm" "vm" {
-  name                      = var.name
-  description               = var.description
-  vapp_name                 = var.vapp_name
-  vapp_template_id          = data.vcd_catalog_vapp_template.template.id
-  computer_name             = local.computer_name
-  memory                    = var.memory
-  cpus                      = var.cpus
-  firmware                  = var.firmware
-  hardware_version          = var.hardware_version
-  power_on                  = true
-  network_dhcp_wait_seconds = 60
+  name                           = var.name
+  description                    = var.description
+  vapp_name                      = var.vapp_name
+  vapp_template_id               = data.vcd_catalog_vapp_template.template.id
+  computer_name                  = local.computer_name
+  memory                         = var.memory
+  cpus                           = var.cpus
+  firmware                       = var.firmware
+  hardware_version               = var.hardware_version
+  power_on                       = true
+  network_dhcp_wait_seconds      = 60
+  expose_hardware_virtualization = var.expose_hardware_virtualization
 
   dynamic "override_template_disk" {
     for_each = var.template_disk_size != 0 ? [var.template_disk_size] : []

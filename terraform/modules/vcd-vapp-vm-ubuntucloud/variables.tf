@@ -42,6 +42,11 @@ variable "cpus" {
   description = "vm cpu. default: 1"
 }
 
+variable "expose_hardware_virtualization" {
+  type    = bool
+  default = false
+}
+
 variable "firmware" {
   type        = string
   default     = "efi"
