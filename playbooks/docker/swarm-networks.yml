@@ -1,0 +1,14 @@
+---
+- name: Docker Swarm Networks
+  hosts: all
+  tasks:
+    - name: Create overlay network (backbone)
+      community.docker.docker_network:
+        name: backbone
+        driver: overlay
+        attachable: true
+        ipam_config:
+          - subnet: "{{ init_docker_swarm_network_backbone_subnet }}"
+            gateway: "{{ init_docker_swarm_network_backbone_gateway }}"
+
+      when: inventory_hostname in 'master'
