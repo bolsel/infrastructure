@@ -1,0 +1,8 @@
+---
+- name: Create docker daemon file
+  become: true
+  template:
+    src: "docker-daemon.json.j2"
+    dest: "/etc/docker/daemon.json"
+    mode: "0644"
+  notify: Reload docker

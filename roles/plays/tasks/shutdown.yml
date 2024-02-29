@@ -1,0 +1,4 @@
+---
+- name: Shutdown
+  become: true
+  community.general.shutdown:

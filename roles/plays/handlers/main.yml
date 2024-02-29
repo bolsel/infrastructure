@@ -1,0 +1,6 @@
+---
+- name: Reload docker
+  become: true
+  systemd_service:
+    name: docker
+    state: reloaded

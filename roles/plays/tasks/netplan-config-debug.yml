@@ -1,0 +1,7 @@
+---
+- name: Netplan config debug
+  set_fact:
+    config: "{{ lookup('community.general.merge_variables', 'netplan_config_', pattern_type='prefix') }}"
+- name: Config
+  debug:
+    msg: "{{ config }}"

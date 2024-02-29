@@ -1,0 +1,5 @@
+---
+- name: Plays Tasks
+  hosts: "{{ host | default('all') }}"
+  roles:
+    - plays

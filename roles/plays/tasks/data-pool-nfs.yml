@@ -1,0 +1,8 @@
+---
+- name: Nfs NAS /mnt/data
+  include_role:
+    name: mounts
+  vars:
+    nfs_nas:
+      - src: "{{ init_nas_data_pool_fullpath }}"
+        path: /mnt/data

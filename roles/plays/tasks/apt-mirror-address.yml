@@ -1,0 +1,7 @@
+---
+- name: Replace old hostname with new hostname (requires Ansible >= 2.4)
+  become: true
+  ansible.builtin.replace:
+    path: /etc/apt/sources.list
+    regexp: "http://id.archive.ubuntu.com/ubuntu/"
+    replace: "http://sg.archive.ubuntu.com/ubuntu/"

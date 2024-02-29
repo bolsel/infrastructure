@@ -1,0 +1,36 @@
+- name: Install fish package
+  become: true
+  apt:
+    name:
+      - fish
+
+- name: Check if omf is installed for fish users
+  become: true
+  stat:
+    path: "/home/{{ item }}/.local/share/omf"
+  with_items: "{{ users | split(',') }}"
+  register: omf_user_status
+
+- name: Register users who need omf
+  set_fact:
+    user_need_omf: "{{ omf_user_status.results | rejectattr('stat.exists') | map(attribute='item') | list }}"
+
+- name: Install omf when absent of fish user's home
+  when: user_need_omf | length > 0
+  block:
+    - name: Get latest omf from git
+      git:
+        repo: "https://github.com/oh-my-fish/oh-my-fish"
+        dest: "/tmp/omf"
+        clone: true
+
+    - name: Installing omf for fish user
+      become: true
+      become_user: "{{ item }}"
+      command: /tmp/omf/bin/install -y --offline --noninteractive
+      with_items: "{{ user_need_omf }}"
+
+    - name: Cleanup omf install files
+      file:
+        path: "/tmp/omf"
+        state: absent

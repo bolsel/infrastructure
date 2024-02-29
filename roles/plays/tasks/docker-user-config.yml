@@ -1,0 +1,20 @@
+---
+- name: User docker dir
+  become: true
+  file:
+    dest: /home/{{ item }}/.docker
+    state: directory
+    mode: "0700"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  with_items: "{{ init_docker_users }}"
+
+- name: Create docker daemon file
+  become: true
+  template:
+    src: "docker-user-config.json.j2"
+    dest: "/home/{{ item }}/.docker/config.json"
+    mode: "0600"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  with_items: "{{ init_docker_users }}"

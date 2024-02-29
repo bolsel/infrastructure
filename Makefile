@@ -5,7 +5,12 @@ build-inventory:
 
 play:
 	ANSIBLE_CACHE_PLUGIN_PREFIX=$(inventory)_ \
-	ansible-playbook -i .private/inventories/$(inventory) $(r)
+	ansible-playbook -i inventory/$(inventory) $(r)
+
+plays:
+	ANSIBLE_CACHE_PLUGIN_PREFIX=$(inventory)_ \
+	ansible-playbook -i inventory/$(inventory) plays.yml -e task=$(t) $(r)
+
 
 play-vcd-kubernetes-kubespray:
 	cd tools/kubespray && \
