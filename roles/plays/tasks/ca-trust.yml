@@ -1,11 +1,13 @@
 ---
 - name: Make sure the folder exists
+  become: true
   file:
     path: /usr/local/share/ca-certificates
     state: directory
     mode: "0755"
 
 - name: Copy the certificates
+  become: true
   copy:
     src: "{{ item }}"
     dest: "/usr/local/share/ca-certificates/{{ item | basename }}.crt"
