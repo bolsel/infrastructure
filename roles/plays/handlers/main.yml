@@ -6,4 +6,5 @@
     state: reloaded
 
 - name: Update CA
+  become: true
   command: update-ca-certificates
