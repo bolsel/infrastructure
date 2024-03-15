@@ -1,0 +1,42 @@
+---
+- name: Install iscsi tools package
+  become: true
+  apt:
+    name:
+      - open-iscsi
+      - lsscsi
+      - sg3-utils
+      - multipath-tools
+      - scsitools
+- name: Multipath config
+  become: true
+  template:
+    src: multipath.conf.j2
+    dest: /etc/multipath.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Systemctl enable multipath-tols
+  become: true
+  systemd_service:
+    name: multipath-tools
+    enabled: true
+
+- name: Systemctl enable open-iscsi
+  become: true
+  systemd_service:
+    name: open-iscsi
+    enabled: true
+
+- name: Start service multipath-tols
+  become: true
+  service:
+    name: multipath-tools
+    state: started
+
+- name: Start service open-iscsi
+  become: true
+  service:
+    name: open-iscsi
+    state: started
