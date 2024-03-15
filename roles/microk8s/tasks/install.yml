@@ -18,7 +18,7 @@
     file: install-local.yml
   vars:
     snap_package_dirname: "{{ microk8s_local_path | default(microk8s_version) }}"
-    local_snap_packages_dir_base: "{{ playbook_dir ~ '/../local/snap_packages/microk8s' }}"
+    local_snap_packages_dir_base: "{{ playbook_dir ~ '/local/snap_packages/microk8s' }}"
     local_snap_packages_dir: "{{ local_snap_packages_dir_base ~ '/' ~ snap_package_dirname }}"
   when: microk8s_download_local
 - name: Install microk8s

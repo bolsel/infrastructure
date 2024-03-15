@@ -1,0 +1,9 @@
+---
+- name: Local disk /mnt/local
+  include_role:
+    name: mounts
+  vars:
+    locals:
+      - device: /dev/sdb
+        src: /dev/sdb1
+        path: /mnt/local
