@@ -81,3 +81,23 @@ contoh, melakukan *ping* task ke *master* host pada *vcd-k8s* inventory
 ```shell
 make play inventory=vcd-k8s t=ping r="--limit master"
 ```
+
+## deploy microk8s HA ke vcd
+
+```shell
+# netplan
+make plays inventory=vcd-k8s t=netplan
+
+# certificate self signed untuk private registry
+make plays inventory=vcd-k8s t=ca-trust
+
+# deploy master control plane
+make plays inventory=vcd-k8s t=microk8s r="-b --limit master"
+
+# control plane
+make plays inventory=vcd-k8s t=microk8s r="-b --limit node-01,node-02"
+
+# workers
+make plays inventory=vcd-k8s t=microk8s r="-b --limit node-03,node-04"
+
+```
