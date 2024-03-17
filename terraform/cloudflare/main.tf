@@ -29,9 +29,9 @@ resource "cloudflare_tunnel_config" "main" {
   tunnel_id  = data.cloudflare_tunnel.main.id
 
   config {
-    warp_routing {
-      enabled = true
-    }
+    # warp_routing {
+    #   enabled = true
+    # }
     dynamic "ingress_rule" {
       for_each = local.tunnel_ingress_rules
       content {
