@@ -111,6 +111,15 @@ locals {
   vms_list = [for key, val in local.vms : merge({ name = key }, val)]
 }
 
+
+resource "vcd_independent_disk" "k8s_node_local_disk" {
+  for_each     = local.vms
+  name         = "k8s_${each.key}_local"
+  size_in_mb   = 32 * 1024
+  bus_type     = "SCSI"
+  bus_sub_type = "VirtualSCSI"
+}
+
 module "vms_k8s" {
   source = "../../modules/vcd-vapp-vm-ubuntucloud"
   init   = module.init
@@ -124,8 +133,13 @@ module "vms_k8s" {
   memory        = (can(each.value.memory) ? each.value.memory : 8) * 1024
 
   template_disk_size = 32 * 1024
-  disks              = lookup(each.value, "disks", [])
-
+  disks = [
+    {
+      name        = vcd_independent_disk.k8s_node_local_disk[each.key].name
+      bus_number  = 0
+      unit_number = 1
+    }
+  ]
   local_admin_password       = module.init.cloud.local_admin_password
   local_admin_authorized_key = module.init.cloud.local_admin_authorized_key
   automation_authorized_key  = module.init.cloud.automation_authorized_key
