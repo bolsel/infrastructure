@@ -3,6 +3,9 @@ SHELL := /bin/bash
 ansible-cloudflared:
 	ansible-playbook -i .private/inventory/cloudflared.ini playbooks/cloudflared.yml
 
+tf-init:
+	cd terraform/$(f) && terraform init
+
 tf-plan:
 	cd terraform/$(f) && terraform plan
 
