@@ -1,0 +1,24 @@
+---
+version: 0.2.0
+{% if inventory_hostname in groups['master'] %}
+persistentClusterToken: {{ microk8s_persistent_cluster_token }}
+{% endif %}
+addons:
+  - name: dns
+    args: [/etc/resolv.conf, {{ microk8s_dns_ip }}]
+extraCNIEnv:
+  IPv4_SUPPORT: true
+  IPv4_CLUSTER_CIDR: "{{ microk8s_cluster_cidr }}"
+  IPv4_SERVICE_CIDR: "{{ microk8s_service_cidr }}"
+extraSANs:
+  - {{ microk8s_cluster_svc_ip }}
+  - {{ microk8s_cluster_domain }}
+extraKubeletArgs:
+  --cluster-domain: {{ microk8s_cluster_domain }}
+{% if inventory_hostname in groups['control_plane'] or inventory_hostname in groups['worker'] %}
+join:
+  url: {{ microk8s_master_ip }}:25000/{{ microk8s_persistent_cluster_token }}
+{% if inventory_hostname in groups['worker'] %}
+  worker: true
+{% endif %}
+{% endif %}

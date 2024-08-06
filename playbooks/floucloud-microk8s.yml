@@ -1,0 +1,74 @@
+---
+- name: Microk8s
+  hosts: all
+  become: true
+  tasks:
+    - name: Microk8s common dir
+      file:
+        dest: "/var/snap/microk8s/common"
+        state: directory
+        mode: "0755"
+        owner: root
+        group: root
+
+    - name: Setup Launch Configurations
+      template:
+        src: "floucloud-microk8s/launch-configurations.yaml.j2"
+        dest: "/var/snap/microk8s/common/.microk8s.yaml"
+        mode: "0644"
+
+    - name: Install microk8s
+      community.general.snap:
+        name: microk8s
+        classic: true
+        channel: "{{ microk8s_version }}"
+
+    - name: Add user to microk8s group
+      user:
+        name: "{{ item }}"
+        groups:
+          - microk8s
+        append: true
+      with_items: "{{ microk8s_users }}"
+
+    - name: Reset ssh connection to apply user changes.
+      meta: reset_connection
+
+    - name: Control plane configure
+      when:
+        - inventory_hostname in groups['master'] or inventory_hostname in groups['control_plane']
+      block:
+        - name: Create kubectl alias
+          command: "snap alias microk8s.kubectl kubectl"
+          changed_when: false
+          register: aliaskubectlout
+
+        - name: Create helm3 alias
+          command: "snap alias microk8s.helm3 helm"
+          changed_when: false
+          register: aliashelmout
+
+        - name: Wait microk8s ready
+          command: microk8s.status --wait-ready
+
+        - name: Create ha-conf file
+          template:
+            src: "floucloud-microk8s/ha-conf.j2"
+            dest: /var/snap/microk8s/current/args/ha-conf
+            owner: root
+            group: microk8s
+            mode: "0600"
+          notify: Restart microk8s
+
+        - name: Wait microk8s ready
+          command: microk8s.status --wait-ready
+
+    - name: Disable snap autoupdate
+      command: "sudo snap refresh --hold microk8s"
+      when: microk8s_disable_snap_autoupdate
+      
+  handlers:
+    - name: Restart microk8s
+      shell: |
+        microk8s.stop
+        microk8s.start

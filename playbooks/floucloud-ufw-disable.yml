@@ -1,0 +1,8 @@
+---
+- name: Ufw disable
+  hosts: all
+  become: true
+  tasks:
+    - name: Disable
+      ansible.builtin.shell:
+        sudo ufw disable
