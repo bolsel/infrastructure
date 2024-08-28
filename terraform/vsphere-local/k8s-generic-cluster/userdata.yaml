@@ -1,0 +1,19 @@
+#cloud-config
+apt:
+  primary:
+    - arches: [default]
+      uri: http://id.archive.ubuntu.com/ubuntu/
+
+# package_update: true
+hostname: ${hostname}
+ssh_pwauth: yes
+users:
+  - name: ${local_admin_username}
+    lock_passwd: False
+    gecos: "Local Admin"
+    groups: [adm, sudo]
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    shell: /bin/bash
+    hashed_passwd: ${local_admin_password}
+    ssh_authorized_keys:
+      - ${local_admin_authorized_key}
