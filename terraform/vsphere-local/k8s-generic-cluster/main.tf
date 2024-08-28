@@ -106,6 +106,7 @@ resource "vsphere_virtual_machine" "vms" {
       local_admin_authorized_key = module.vsphere_local_vars._.local_admin_authorized_key
     }))
     "guestinfo.userdata.encoding" = "base64"
+    "disk.EnableUUID"             = "TRUE"
   }
   network_interface {
     network_id = data.vsphere_network.network.id
